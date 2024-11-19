@@ -1,0 +1,7 @@
+app_venv/
+__pycache__/
+*/__pycache__
+*.pyc
+.env
+staticfiles/*
+!staticfiles/.gitkeep

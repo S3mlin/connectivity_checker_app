@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Site connectivity checker</title>
+    </head>
+
+    <body>
+        <h1>{% block header_text%}{% endblock %}</h1>
+        <nav>
+            <a href="/">Home</a>
+            {% if user.email %}
+                <ul>
+                    <li><a href="{% url 'my_sites' user.email%}">My sites</a></li>
+                </ul>
+                <ul>
+                    <li>Logged in as {{ user.email }}</li>
+                    <li><a href="{% url 'logout' %}">Log out</a></li>
+                </ul>
+            {% else %}
+                <form method="POST"
+                    action="{% url 'send_login_email' %}">
+                <span>Enter email to login:</span>
+                <input name="email", type="text" />
+                {% csrf_token %}
+                </form>
+            {% endif %}
+        </nav>
+        <form method="POST">
+            {{ form.url }}
+            {% csrf_token %}
+            {% if form.errors %}
+                <div>{{ form.url.errors }}</div>
+            {% endif %}
+        </form>
+        {% if message %}
+            <div>{{ message }}</div>
+        {% endif %}
+        {% block extra_content %}
+        {% endblock %}
+    </body>
+</html>

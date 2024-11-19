@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block header_text %}Enter an url to check{% endblock %}
+
+{% block extra_content %}
+<style>
+.box {
+  float: left;
+  height: 20px;
+  width: 20px;
+  margin-bottom: 15px;
+  border: 1px solid black;
+  clear: both;
+}
+
+.red {
+  background-color: red;
+}
+
+.green {
+  background-color: green;
+}
+
+.yellow {
+  background-color: yellow;
+}
+</style>
+
+<p>Recently checked web sites</p>
+
+<table>
+    <tr>
+        <th>Site url</th>
+        <th>Status</th>
+        <th>Last checked</th>
+    </tr>
+    {% for site in sites %}
+        <tr>
+            <td>{{ site.url }}</td>
+            <td class="box {% if 3000 >= site.ping%}green{% elif site.ping > 3000 %}yellow{% else %}red{%endif%}">
+            </td>
+            <td>to-do!</td>
+        </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block header_text %}My Sites{% endblock %}
+
+<!--{% block list_form %}{% endblock %}-->
+
+{% block extra_content %}
+    <h2>{{ owner.email }}'s sites</h2>  
+    <table>
+        {% for subscription in subscriptions %}  
+            <tr>
+                <td>{{ subscription.site.url }}</td>
+                <td><a href="{% url 'unsubscribe' owner.email subscription.site.id %}"><button>Unsubscribe</button></a></td>
+            </tr>
+        {% endfor %}
+    </table>
+    <form method="POST"
+        action="{% url 'search_and_subscribe' owner.email %}">
+        <span>Enter an url of a site to subscribe to:</span>
+        <input name="url", type="text", value="url"/>
+        {% csrf_token %}
+    </form>
+{% endblock %}
