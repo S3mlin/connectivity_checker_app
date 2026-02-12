@@ -1,0 +1,91 @@
+{
+    "configurations": [
+    {
+        "name": "Django: Runserver",
+            "type": "debugpy",
+            "request": "launch",
+            "python": "${workspaceFolder}/app_venv/bin/python",
+            "program": "${workspaceFolder}/manage.py",
+            "args": [
+                "runserver"
+            ],
+            "envFile": "${workspaceFolder}/.env",
+            "django": true,
+            "justMyCode": true
+    },
+    {
+        "name": "SMT: Celery Workers",
+        "type": "debugpy",
+        "request": "launch",
+        "module": "celery",
+        "console": "integratedTerminal",
+        "envFile": "${workspaceFolder}/.env",
+        "python": "${workspaceFolder}/app_venv/bin/python",
+        "args": ["-A", "connectivity_checker_app", "worker", "--pool=solo", "-l", "info"],
+    },
+    {
+        "name": "SMT: Celery Beat",
+        "type": "debugpy",
+        "request": "launch",
+        "module": "celery",
+        "console": "integratedTerminal",
+        "envFile": "${workspaceFolder}/.env",
+        "python": "${workspaceFolder}/app_venv/bin/python",
+        "args": ["-A", "connectivity_checker_app", "beat", "--scheduler", "django", "-l", "info"],
+    },
+    {
+        "name": "SMT: Django makemigrations",
+        "type": "debugpy",
+        "request": "launch",
+        "args": [
+            "makemigrations",
+        ],
+        "envFile": "${workspaceFolder}/.env",
+        "django": true,
+        "autoStartBrowser": false,
+        "program": "${workspaceFolder}/manage.py",
+        "python": "${workspaceFolder}/app_venv/bin/python",
+    },
+    {
+        "name": "SMT: Django migrate",
+        "type": "debugpy",
+        "request": "launch",
+        "args": [
+            "migrate",
+        ],
+        "envFile": "${workspaceFolder}/.env",
+        "django": true,
+        "autoStartBrowser": false,
+        "program": "${workspaceFolder}/manage.py",
+        "python": "${workspaceFolder}/app_venv/bin/python",
+    },
+    {
+        "name": "Django: Runserver - Granian",
+            "type": "debugpy",
+            "request": "launch",
+            "python": "${workspaceFolder}/venv/bin/python",
+            "module": "granian",
+            "args": [
+                "--interface", "asginl", "--port", "8000", "core.asgi:application",
+
+            ],
+            "envFile": "${workspaceFolder}/.env",
+            "django": true,
+            "justMyCode": true
+    },
+    {
+        "name": "Django: Collect Static",
+            "type": "debugpy",
+            "request": "launch",
+            "python": "${workspaceFolder}/venv/bin/python",
+            "program": "${workspaceFolder}/manage.py",
+            "args": [
+                "collectstatic"
+            ],
+            "envFile": "${workspaceFolder}/.env",
+            "django": true,
+            "justMyCode": true
+    },
+    ]
+  }
+  

@@ -10,7 +10,9 @@
         {% for subscription in subscriptions %}  
             <tr>
                 <td>{{ subscription.site.url }}</td>
-                <td><a href="{% url 'unsubscribe' owner.email subscription.site.id %}"><button>Unsubscribe</button></a></td>
+                {% with last_url="my_sites"%}
+                <td><a href="{% url 'unsubscribe' owner.email subscription.site.id last_url %}"><button>Unsubscribe</button></a></td>
+                {% endwith %}
             </tr>
         {% endfor %}
     </table>

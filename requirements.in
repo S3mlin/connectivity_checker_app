@@ -1,0 +1,9 @@
+dajngo
+tcppinglib
+celery
+django-celery-beat
+django-celery-results
+redis
+psycopg2-binary
+httpx
+django-celery-email

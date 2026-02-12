@@ -24,24 +24,76 @@
 .yellow {
   background-color: yellow;
 }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  border: none;
+  text-align: center;
+  padding: 6px; /* Reduced padding by 2px */
+}
 </style>
 
 <p>Recently checked web sites</p>
 
+{% with last_url="home"%}
 <table>
     <tr>
         <th>Site url</th>
         <th>Status</th>
         <th>Last checked</th>
+        <th></th>
     </tr>
-    {% for site in sites %}
+    {% for site in recent_sites %}
         <tr>
             <td>{{ site.url }}</td>
             <td class="box {% if 3000 >= site.ping%}green{% elif site.ping > 3000 %}yellow{% else %}red{%endif%}">
             </td>
-            <td>to-do!</td>
+            <td>{{ site.date_modified }}</td>
+            <td>
+              {% if user.email%}
+                {% if site.is_subscribed %}
+                  <a href="{% url 'unsubscribe' user.email site.id last_url %}"><button>Unsubscribe</button></a>
+                {% else %}
+                  <a href="{% url 'subscribe' user.email site.id last_url %}"><button>Subscribe</button></a>
+                {% endif %}
+              {% endif %}
+            </td>
         </tr>
     {% endfor %}
 </table>
+
+<p>Popular sites</p>
+<table>
+  <tr>
+      <th>Site url</th>
+      <th>Status</th>
+      <th>Subscriptions</th>
+      <th>Last checked</th>
+      <th></th>
+  </tr>
+  {% for site in top_sites %}
+      <tr>
+          <td>{{ site.url }}</td>
+          <td class="box {% if 3000 >= site.ping%}green{% elif site.ping > 3000 %}yellow{% else %}red{%endif%}">
+          </td>
+          <td>{{ site.num_subscriptions }}</td>
+          <td>{{ site.date_modified }}</td>
+          <td>
+            {% if user.email %}
+              {% if site.is_subscribed %}
+                <a href="{% url 'unsubscribe' user.email site.id last_url %}"><button>Unsubscribe</button></a>
+              {% else %}
+                <a href="{% url 'subscribe' user.email site.id last_url %}"><button>Subscribe</button></a>
+              {% endif %}
+            {% endif %}
+          </td>
+      </tr>
+  {% endfor %}
+</table>
+{% endwith %}
 
 {% endblock %}

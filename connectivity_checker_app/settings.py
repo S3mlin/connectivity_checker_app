@@ -40,12 +40,16 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "main_app",
     "accounts",
+    "django_celery_beat",
+    "django_celery_results",
+    "djcelery_email"
 ]
 
 AUTH_USER_MODEL = 'accounts.User'
 
 AUTHENTICATION_BACKENDS = [
     'accounts.authentication.PasswordlessAuthenticationBackend',
+    'django.contrib.auth.backends.ModelBackend',
 ]
 
 MIDDLEWARE = [
@@ -84,8 +88,12 @@ WSGI_APPLICATION = "connectivity_checker_app.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("POSTGRES_NAME"),
+        "USER": os.getenv("POSTGRES_USER"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
+        "HOST": os.getenv("POSTGRES_HOST"),
+        "PORT": os.getenv("POSTGRES_PORT"),
     }
 }
 
@@ -131,8 +139,31 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# EMAIL
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+#EMAIL_BACKEND = 'djcelery_email.backends.CeleryEmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'ConnectivityCheckerApp@gmail.com'
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD')
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASSWORD')
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
+
+CELERY_EMAIL_TASK_CONFIG = {
+    'queue' : 'email',
+    'rate_limit' : '50/m',
+}
+
+
+# CELERY
+
+CELERY_TIMEZONE = "Europe/Berlin"
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 10 * 60
+CELERY_WORKER_MAX_TASKS_PER_CHILD = 100
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
+CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND")
+CELERY_CACHE_BACKEND = "django-cache"
+CELERYBEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+CELERY_RESULT_EXTENDED = True
+CELERYBEAT_MAX_LOOP_INTERVAL = 600

@@ -26,7 +26,7 @@ def login(request):
         uid=request.GET.get("token")
     )
     if user:
-        auth.login(request, user)
+        auth.login(request, user, backend='accounts.authentication.PasswordlessAuthenticationBackend')
     return redirect("/")
 
 

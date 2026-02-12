@@ -1,13 +1,17 @@
+from django.utils import timezone
 from django.db import models
 from django.urls import reverse
 from accounts.models import User
 
 
 class Site(models.Model):
+    url = models.URLField(default="", unique=True)
+    ping = models.DecimalField(null=True, blank=True, default="", max_digits=4, decimal_places=2)
+    date_modified = models.DateTimeField(default=timezone.now)
 
-    url = models.TextField(default="", unique=True)
-
-    ping = models.IntegerField(null=True, blank=True, default="")
+    def save(self, *args, **kwargs):
+        self.date_modified = timezone.now()
+        super().save(*args, **kwargs)
 
 
 class Subscription(models.Model):
@@ -53,91 +57,91 @@ class Subscription(models.Model):
             self.email_field = email
     email = property(get_email, set_email)"""
 
-    def update(self, action):
+    # def update(self, action):
 
-        assert action in ("subscribe", "update", "unsubscribe")
+    #     assert action in ("subscribe", "update", "unsubscribe")
 
-        if action == "subscribe" or action == "update":
-            self.subscribed = True
-        else:
-            self.unsubscribed = True
+    #     if action == "subscribe" or action == "update":
+    #         self.subscribed = True
+    #     else:
+    #         self.unsubscribed = True
 
-        self.save()
+    #     self.save()
 
-    def _subscribe(self):
+    # def _subscribe(self):
 
-        self.subscribed = True
-        self.unsubscribed = False
+    #     self.subscribed = True
+    #     self.unsubscribed = False
 
-    def _unsubscribe(self):
+    # def _unsubscribe(self):
 
-        self.subscribed = False
-        self.unsubscribed = True
+    #     self.subscribed = False
+    #     self.unsubscribed = True
 
-    def save(self, *args, **kwargs):
+    # def save(self, *args, **kwargs):
 
-        assert self.user or self.email_field
+    #     assert self.user or self.email_field
 
-        if self.pk:
-            assert(Subscription.objects.filter(pk=self.pk).count() == 1)
+    #     if self.pk:
+    #         assert(Subscription.objects.filter(pk=self.pk).count() == 1)
 
-            subsription = Subscription.objects.get(pk=self.pk)
-            old_subscribed = subsription.subscribed
-            old_unsubscribed = subsription.unsubscribed
+    #         subsription = Subscription.objects.get(pk=self.pk)
+    #         old_subscribed = subsription.subscribed
+    #         old_unsubscribed = subsription.unsubscribed
 
-            if ((self.subscribed and not old_subscribed) or
-                (old_unsubscribed and not self.unsubscribed)):
-                self._subscribe()
+    #         if ((self.subscribed and not old_subscribed) or
+    #             (old_unsubscribed and not self.unsubscribed)):
+    #             self._subscribe()
 
-                assert not self.unsubscribed
-                assert self.subscribed
+    #             assert not self.unsubscribed
+    #             assert self.subscribed
 
-            elif ((self.unsubscribed and not old_unsubscribed) or
-                  (old_subscribed and not self.subscribed)):
-                self._unsubscribe()
+    #         elif ((self.unsubscribed and not old_unsubscribed) or
+    #               (old_subscribed and not self.subscribed)):
+    #             self._unsubscribe()
 
-                assert not self.subscribed
-                assert self.unsubscribed
+    #             assert not self.subscribed
+    #             assert self.unsubscribed
 
-        else:
-            if self.subscribed:
-                self._subscribe()
-            elif self.unsubscribed:
-                self._unsubscribe()
+    #     else:
+    #         if self.subscribed:
+    #             self._subscribe()
+    #         elif self.unsubscribed:
+    #             self._unsubscribe()
 
-        super().save(*args, **kwargs)
+    #     super().save(*args, **kwargs)
 
-    def __str__(self):
-        if self.name:
-            return "%(name)s <%(email)s> to %(site)s" % {
-                'name': self.name,
-                'email': self.email,
-                'site': self.site
-            }
+    # def __str__(self):
+    #     if self.name:
+    #         return "%(name)s <%(email)s> to %(site)s" % {
+    #             'name': self.name,
+    #             'email': self.email,
+    #             'site': self.site
+    #         }
         
-        else:
-            return "%(email)s to %(site)s" % {
-                'email': self.email,
-                'site': self.site
-            }
+    #     else:
+    #         return "%(email)s to %(site)s" % {
+    #             'email': self.email,
+    #             'site': self.site
+    #         }
     
-    def subscribe_activate_url(self):
-        return reverse('subscription_update', kwargs={
-            'site_slug': self.site.slug,
-            'email': self.email,
-            'action': 'subscribe'
-        })
+    # def subscribe_activate_url(self):
+    #     return reverse('subscription_update', kwargs={
+    #         'site_slug': self.site.slug,
+    #         'email': self.email,
+    #         'action': 'subscribe'
+    #     })
     
-    def unsubscribe_activate_url(self):
-        return reverse('subscription_update', kwargs={
-            'site_slug': self.site.slug,
-            'email': self.email,
-            'action': 'unsubscribe'
-        })
+    # def unsubscribe_activate_url(self):
+    #     return reverse('subscription_update', kwargs={
+    #         'site_slug': self.site.slug,
+    #         'email': self.email,
+    #         'action': 'unsubscribe'
+    #     })
     
-    def update_activate_url(self):
-        return reverse('subscription_update', kwargs={
-            'site_slug': self.site.slug,
-            'email': self.email,
-            'action': 'update'
-        })
+    # def update_activate_url(self):
+    #     return reverse('subscription_update', kwargs={
+    #         'site_slug': self.site.slug,
+    #         'email': self.email,
+    #         'action': 'update'
+    #     })
