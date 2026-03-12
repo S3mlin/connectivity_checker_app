@@ -154,6 +154,19 @@ resource "aws_db_instance" "default" {
   skip_final_snapshot    = true
   publicly_accessible    = false 
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
+
+  # --- PRODUCTION BACKUP SETTINGS ---
+
+  # skip_final_snapshot       = false
+  # final_snapshot_identifier = "django-db-final-snapshot-${formatdate("YYYYMMDDhhmmss", timestamp())}"
+  # backup_retention_period   = 7
+  # backup_window             = "03:00-04:00"
+  # maintenance_window        = "sun:04:00-sun:05:00"
+  # copy_tags_to_snapshot     = true
+  # # Ignore changes to the final snapshot name so Terraform doesn't constantly try to update it
+  # lifecycle {
+  #   ignore_changes = [final_snapshot_identifier]
+  # }
 }
 
 
