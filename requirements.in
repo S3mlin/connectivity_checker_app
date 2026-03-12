@@ -1,4 +1,4 @@
-dajngo
+django
 tcppinglib
 celery
 django-celery-beat
@@ -7,3 +7,5 @@ redis
 psycopg2-binary
 httpx
 django-celery-email
+gunicorn
+whitenoise

@@ -6,7 +6,7 @@ from accounts.models import User
 
 class Site(models.Model):
     url = models.URLField(default="", unique=True)
-    ping = models.DecimalField(null=True, blank=True, default="", max_digits=4, decimal_places=2)
+    ping = models.DecimalField(null=True, blank=True, default=None, max_digits=7, decimal_places=2)
     date_modified = models.DateTimeField(default=timezone.now)
 
     def save(self, *args, **kwargs):

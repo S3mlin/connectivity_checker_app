@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='site',
             name='ping',
-            field=models.DecimalField(blank=True, decimal_places=2, default='', max_digits=4, null=True),
+            field=models.DecimalField(blank=True, decimal_places=2, default=None, max_digits=7, null=True),
         ),
     ]
