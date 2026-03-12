@@ -28,14 +28,24 @@ jobs:
           context: .
           push: true
           tags: semaftw/superlists:latest
-          cache-from: type=registry,ref=semaftw/superlists:buildcache
-          cache-to: type=registry,ref=semaftw/superlists:buildcache,mode=max
 
   deploy:
     name: Deploy to AWS EC2
     needs: build-and-push
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Copy docker-compose and nginx config to EC2
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "docker-compose.yml,nginx/"
+          target: "/home/ubuntu/"
+
       - name: Execute Deployment Commands via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -43,7 +53,6 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            echo "Navigating to app directory..."
             cd /home/ubuntu
             
             echo "Pulling latest Docker images..."
@@ -54,5 +63,8 @@ jobs:
             
             echo "Running database migrations..."
             docker compose exec -T web python manage.py migrate
+            
+            echo "Collecting static files..."
+            docker compose exec -T web python manage.py collectstatic --noinput
             
             echo "Deployment successful!"
