@@ -59,14 +59,26 @@ resource "aws_iam_role" "ec2_secrets_role" {
 
 resource "aws_iam_policy" "secrets_policy" {
   name        = "ec2_read_secrets_policy"
-  description = "Allow EC2 to read Secrets Manager"
+  description = "Allow EC2 to read Secrets Manager and CloudWatch Metrics"
   policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [{
-      Action   = ["secretsmanager:GetSecretValue"]
-      Effect   = "Allow"
-      Resource = data.aws_secretsmanager_secret.app_secrets.arn
-    }]
+    Statement = [
+      {
+        Action   = ["secretsmanager:GetSecretValue"]
+        Effect   = "Allow"
+        Resource = data.aws_secretsmanager_secret.app_secrets.arn
+      },
+      {
+        Action   = [
+          "cloudwatch:ListMetrics",
+          "cloudwatch:GetMetricData",
+          "cloudwatch:GetMetricStatistics",
+          "cloudwatch:DescribeAlarms"
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+      }
+    ]
   })
 }
 
@@ -90,7 +102,7 @@ resource "aws_eip" "django_eip" {
 
 resource "aws_security_group" "django_sg" {
   name        = "django-web-sg"
-  description = "Allow Web and SSH"
+  description = "Allow Web, SSH and Grafana"
 
   ingress {
     from_port   = 80
@@ -101,6 +113,12 @@ resource "aws_security_group" "django_sg" {
   ingress {
     from_port   = 22
     to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    from_port   = 3000
+    to_port     = 3000
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -216,7 +234,6 @@ echo "DEBUG=False" >> /home/ubuntu/.env
 echo "CELERY_BROKER_URL=redis://redis:6379/0" >> /home/ubuntu/.env
 echo "CELERY_RESULT_BACKEND=redis://redis:6379/0" >> /home/ubuntu/.env
 
-# Fix permissions so the ubuntu user can read the .env file
 chown ubuntu:ubuntu /home/ubuntu/.env
 
 EOF
@@ -234,6 +251,10 @@ output "app_url" {
 
 output "ssh_command" {
   value = "ssh -i ~/.ssh/aws_deploy_key ubuntu@${aws_eip.django_eip.public_ip}"
+}
+
+output "grafana_url" {
+  value = "http://${aws_eip.django_eip.public_ip}:3000"
 }
 
 # --- 8. TERRAFORM STATE BACKEND RESOURCES ---
