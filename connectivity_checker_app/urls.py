@@ -24,4 +24,5 @@ urlpatterns = [
     path("", main_app_views.home_page, name="home"),
     path("sites/", include("main_app.urls")),
     path("accounts/", include("accounts.urls")),
+    path("metrics/", include("django_prometheus.urls")),
 ]
