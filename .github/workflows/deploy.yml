@@ -108,6 +108,9 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd /home/ubuntu
+
+            echo "Waiting for EC2 initialization to finish..."
+            cloud-init status --wait
             
             echo "Pulling latest Docker images..."
             docker compose pull
