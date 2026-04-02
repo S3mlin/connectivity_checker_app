@@ -97,7 +97,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: "docker-compose.yml,nginx/"
+          source: "docker-compose.yml,nginx/,prometheus/"
           target: "/home/ubuntu/"
 
       - name: Execute Deployment Commands via SSH

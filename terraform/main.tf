@@ -102,7 +102,7 @@ resource "aws_eip" "django_eip" {
 
 resource "aws_security_group" "django_sg" {
   name        = "django-web-sg"
-  description = "Allow Web, SSH and Grafana"
+  description = "Allow Web and SSH"
 
   ingress {
     from_port   = 80
